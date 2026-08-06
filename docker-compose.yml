@@ -1,0 +1,11 @@
+services:
+
+  proposta_db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: proposta_db
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
