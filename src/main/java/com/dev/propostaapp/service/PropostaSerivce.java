@@ -7,6 +7,8 @@ import com.dev.propostaapp.mapper.PropostaMapper;
 import com.dev.propostaapp.repository.PropostaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PropostaSerivce {
 
@@ -20,5 +22,11 @@ public class PropostaSerivce {
         Proposta proposta = PropostaMapper.INSTANCE.convertDtoToProposta(propostaRequestDTO);
         propostaRepository.save(proposta);
         return PropostaMapper.INSTANCE.convertEntityToDto(proposta);
+    }
+
+    public List<PropostaResponseDTO> obterProposta() {
+        Iterable<Proposta> propostas = propostaRepository.findAll();
+        return PropostaMapper.INSTANCE.convertListEntityToListDto(propostas);
+
     }
 }
