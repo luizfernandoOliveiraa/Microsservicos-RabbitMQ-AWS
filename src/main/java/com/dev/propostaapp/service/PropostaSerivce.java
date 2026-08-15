@@ -16,7 +16,7 @@ import java.util.List;
 public class PropostaSerivce {
 
     private final PropostaRepository propostaRepository;
-    private final NotificationService notificationService;
+    private final NotificationRabbitService notificationService;
 
     @Value("${rabbitmq.propostapendente.exchange}")
     private String exchange;
@@ -25,10 +25,18 @@ public class PropostaSerivce {
         Proposta proposta = PropostaMapper.INSTANCE.convertDtoToProposta(propostaRequestDTO);
         propostaRepository.save(proposta);
 
-        PropostaResponseDTO response = PropostaMapper.INSTANCE.convertEntityToDto(proposta);
-        notificationService.notificar(response, exchange);
+        notificarRabbitMQ(proposta);
 
-        return response;
+        return PropostaMapper.INSTANCE.convertEntityToDto(proposta);
+    }
+
+    private void notificarRabbitMQ(Proposta proposta ) {
+        try {
+            notificationService.notificar(proposta, exchange);
+        } catch (RuntimeException e) {
+            proposta.setIntegrada(false);
+            propostaRepository.save(proposta);
+        }
     }
 
     public List<PropostaResponseDTO> obterProposta() {
